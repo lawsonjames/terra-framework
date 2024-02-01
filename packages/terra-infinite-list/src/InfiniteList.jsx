@@ -91,6 +91,7 @@ const createSpacer = (height, index) => (
 
 class InfiniteList extends React.Component {
   constructor(props) {
+    console.log('*** Constructor');
     super(props);
 
     this.update = this.update.bind(this);
@@ -111,6 +112,9 @@ class InfiniteList extends React.Component {
   }
 
   componentDidMount() {
+    console.log('*** Component did mount');
+    console.dir(this.contentNode);
+    console.dir(this.isCalculating);
     if (this.contentNode) {
       this.resizeObserver = new ResizeObserver((entries) => {
         this.content = entries[0].contentRect;
@@ -118,6 +122,7 @@ class InfiniteList extends React.Component {
           this.animationFrameID = window.requestAnimationFrame(() => {
             // Resetting the cache so that all elements will be rendered face-up for width calculations
             this.resetCache();
+            console.log('*** FORCE UPDATE');
             this.forceUpdate();
           });
         }
@@ -131,6 +136,7 @@ class InfiniteList extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
+    console.log('*** Should component update');
     const newChildCount = React.Children.count(nextProps.children);
     if (newChildCount > this.childCount) {
       this.lastChildIndex = this.childCount;
@@ -146,6 +152,8 @@ class InfiniteList extends React.Component {
   }
 
   componentDidUpdate() {
+    console.log('*** Component did update');
+    console.dir(this.isCalculating);
     if (this.isCalculating) {
       this.isCalculating = false;
       this.handleResize(this.content);
@@ -154,6 +162,7 @@ class InfiniteList extends React.Component {
   }
 
   componentWillUnmount() {
+    console.log('*** Component will unmount');
     if (this.contentNode) {
       clearTimeout(this.timer);
       window.cancelAnimationFrame(this.animationFrameID);
@@ -167,6 +176,7 @@ class InfiniteList extends React.Component {
    * Following a render reset newChildren values. If new items were render trigger an update calculation.
    */
   handleRenderCompletion() {
+    console.log('*** Handle render completion');
     this.renderNewChildren = false;
     this.preventUpdate = false;
     this.lastChildIndex = this.childCount;
@@ -182,9 +192,11 @@ class InfiniteList extends React.Component {
    * Triggers a height adjustment if the height or scroll height changes.
    */
   handleResize() {
+    console.log('*** Handle resize');
     if (this.scrollHeight !== this.contentNode.scrollHeight || this.clientHeight !== this.contentNode.clientHeight) {
       this.adjustHeight();
     }
+    console.log('*** FORCE UPDATE');
     this.forceUpdate();
   }
 
@@ -284,6 +296,7 @@ class InfiniteList extends React.Component {
   }
 
   resetCache() {
+    console.log('*** Reset cache');
     this.animationFrameID = null;
     this.isCalculating = true;
   }
@@ -295,6 +308,10 @@ class InfiniteList extends React.Component {
    * @param {bool} preventRequest - Should triggerItemRequest be prevented.
    */
   update(event, ensureUpdate, preventRequest) {
+    console.log('*** Update');
+    console.dir(event);
+    console.dir(ensureUpdate);
+    console.dir(preventRequest);
     if (!this.contentNode || this.disableScroll || this.preventUpdate) {
       return;
     }
@@ -312,6 +329,7 @@ class InfiniteList extends React.Component {
         bottomBoundryIndex: hiddenItems.bottomHiddenItem.index,
         hiddenBottomHeight: hiddenItems.bottomHiddenItem.height,
       };
+      console.log('*** FORCE UPDATE');
       this.forceUpdate();
     }
 
@@ -390,6 +408,7 @@ class InfiniteList extends React.Component {
    * Detects which scroll items are on the dom and reads the heights to see if resize has changed the boundClientRect.
    */
   adjustHeight() {
+    console.log('*** Adjust height');
     if (this.contentNode) {
       this.itemsByIndex.forEach((item, itemIndex) => {
         const scrollItemNode = this.contentNode.querySelector(`[data-infinite-list-index="${itemIndex}"]`);
@@ -451,6 +470,7 @@ class InfiniteList extends React.Component {
   }
 
   render() {
+    console.log('*** Render');
     const {
       ariaLabel,
       children,
